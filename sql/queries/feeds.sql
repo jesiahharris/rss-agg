@@ -6,6 +6,9 @@ RETURNING *;
 -- name: GetFeeds :many
 SELECT * from feeds;
 
+-- name: DeleteFeed :exec
+DELETE FROM feeds WHERE id=$1;
+
 -- name: GetNextFeedsToFetch :many
 SELECT * from feeds 
 ORDER BY last_fetched_at ASC NULLS FIRST
