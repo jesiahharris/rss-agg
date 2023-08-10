@@ -48,7 +48,7 @@ func (apiCfg *apiConfig) handlerGetFeedFollows(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	respondWithJSON(w, 201, databaseFeedFollowstoFeedFollows(feedFollows))
+	respondWithJSON(w, 200, databaseFeedFollowstoFeedFollows(feedFollows))
 }
 
 func (apiCfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -67,5 +67,5 @@ func (apiCfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.
 		respondWithError(w, 400, fmt.Sprintf("Couldn't delete feed follow: %v", err))
 		return
 	}
-	respondWithJSON(w, 200, struct{}{})
+	respondWithJSON(w, 204, struct{}{})
 }

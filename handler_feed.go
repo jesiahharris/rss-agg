@@ -56,7 +56,7 @@ func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 400, fmt.Sprintf("Couldn't delete feed follow: %v", err))
 		return
 	}
-	respondWithJSON(w, 200, struct{}{})
+	respondWithJSON(w, 204, struct{}{})
 }
 
 func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
@@ -66,5 +66,5 @@ func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respondWithJSON(w, 201, databaseFeedstoFeeds(feeds))
+	respondWithJSON(w, 200, databaseFeedstoFeeds(feeds))
 }
