@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"text/template"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -59,12 +60,30 @@ func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Reques
 	respondWithJSON(w, 204, struct{}{})
 }
 
+const feedsHTML = `
+<h1> Feeds </h1> 
+<dl>
+{{range .Feeds}}
+<dt><strong>{{.Name}}</strong></dt>
+<dd> URL:{{.Url}}</dd>
+<dd> Updated At: {{.UpdatedAt}} </dd>
+{{end}}
+`
+
 func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+	type data struct {
+		Feeds []Feed
+	}
+
 	feeds, err := apiCfg.DB.GetFeeds(r.Context())
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprintf("Couldn't get feeds: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 200, databaseFeedstoFeeds(feeds))
+	tmpl := template.Must(template.New("").Parse(feedsHTML))
+
+	tmpl.Execute(w, data{Feeds: databaseFeedstoFeeds(feeds)})
+
+	//respondWithJSON(w, 200, databaseFeedstoFeeds(feeds))
 }
