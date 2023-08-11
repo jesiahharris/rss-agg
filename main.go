@@ -19,6 +19,22 @@ type apiConfig struct {
 	DB *database.Queries
 }
 
+const htmlIndex = `<html><head>
+<title>
+Test input form
+</title>
+</head>
+<body> 
+ <p> Input API Key: </p><input type ="text" placeholder="API Key" id="key" />
+</html>
+`
+
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(htmlIndex))
+}
+
 func main() {
 	godotenv.Load()
 
@@ -74,6 +90,7 @@ func main() {
 	v1Router.Get("/feed_follows", apiCfg.middlewareAuth(apiCfg.handlerGetFeedFollows))
 	v1Router.Delete("/feed_follows/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerDeleteFeedFollow))
 
+	v1Router.HandleFunc("/", handleIndex)
 	// mount and set path for router. path will be /v1/*
 	router.Mount("/v1", v1Router)
 
