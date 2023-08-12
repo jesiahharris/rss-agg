@@ -77,20 +77,27 @@ func main() {
 	v1Router.Get("/ready", handlerReadiness)
 	v1Router.Get("/err", handleErr)
 
-	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUser))
-	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Route("/users", func(r chi.Router) {
+		r.Get("/", apiCfg.middlewareAuth(apiCfg.handlerGetUser))
+		r.Post("/", apiCfg.handlerCreateUser)
+	})
 
-	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handlerCreateFeed))
-	v1Router.Get("/feeds", apiCfg.handlerGetFeeds)
-	v1Router.Delete("/feeds/{feedID}", apiCfg.middlewareAuth(apiCfg.handlerDeleteFeed))
+	v1Router.Route("/feeds", func(r chi.Router) {
+		r.Post("/", apiCfg.middlewareAuth(apiCfg.handlerCreateFeed))
+		r.Get("/", apiCfg.handlerGetFeeds)
+		r.Delete("/{feedID}", apiCfg.middlewareAuth(apiCfg.handlerDeleteFeed))
+	})
 
 	v1Router.Get("/posts", apiCfg.middlewareAuth(apiCfg.handlerGetPostsForUser))
 
-	v1Router.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.handlerCreateFeedFollow))
-	v1Router.Get("/feed_follows", apiCfg.middlewareAuth(apiCfg.handlerGetFeedFollows))
-	v1Router.Delete("/feed_follows/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerDeleteFeedFollow))
+	v1Router.Route("/feed_follows", func(r chi.Router) {
+		r.Post("/", apiCfg.middlewareAuth(apiCfg.handlerCreateFeedFollow))
+		r.Get("/", apiCfg.middlewareAuth(apiCfg.handlerGetFeedFollows))
+		r.Delete("/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerDeleteFeedFollow))
+	})
 
 	v1Router.HandleFunc("/", handleIndex)
+
 	// mount and set path for router. path will be /v1/*
 	router.Mount("/v1", v1Router)
 
