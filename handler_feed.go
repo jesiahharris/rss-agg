@@ -12,6 +12,34 @@ import (
 	"github.com/jesiahharris/rss-agg/internal/database"
 )
 
+const createFeedsHTML = `
+	<h1> New feed </h1>
+	<form action="/feeds" method="POST"> 
+		<table> 
+			<tr>
+				<td> Authorization </td>
+				<td><input type="text" name="authorization" /></td>
+			</tr>
+			<tr>
+				<td> Name </td>
+				<td><input type="text" name="name" /></td>
+			</tr>
+			<tr>
+				<td> URL </td>
+				<td><input type="text" name="url" /></td>
+			</tr>
+		</table>
+		<button type="submit"> Create feed</button>
+	</form>
+
+`
+
+func (apiCfg *apiConfig) handlerNewFeed(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.New("").Parse(createFeedsHTML))
+
+	tmpl.Execute(w, nil)
+}
+
 func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Name string `json:"name"`
@@ -60,12 +88,13 @@ func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Reques
 	respondWithJSON(w, 204, struct{}{})
 }
 
-const feedsHTML = `
+const getFeedsHTML = `
 <h1> Feeds </h1> 
 <dl>
 {{range .Feeds}}
 <dt><strong>{{.Name}}</strong></dt>
 <dd> URL:{{.Url}}</dd>
+<dd> ID: {{.ID}}</dd>
 <dd> Updated At: {{.UpdatedAt}} </dd>
 {{end}}
 `
@@ -81,7 +110,7 @@ func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	tmpl := template.Must(template.New("").Parse(feedsHTML))
+	tmpl := template.Must(template.New("").Parse(getFeedsHTML))
 
 	tmpl.Execute(w, data{Feeds: databaseFeedstoFeeds(feeds)})
 
